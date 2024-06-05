@@ -3,6 +3,7 @@ import re
 from contextlib import asynccontextmanager
 from enum import Enum
 from typing import Optional, List
+from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi import FastAPI, Query
 
@@ -19,6 +20,18 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+origins = [
+    "http://localhost:3000",  # Replace with the actual origin of your frontend
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
