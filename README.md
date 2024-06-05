@@ -10,11 +10,12 @@ This repository includes:
 
 - This README file for instructions
 - A very simple Python server which you can spin up locally. Please read the servers [README](./server/README.md) file for installation and running instructions. This server provides an API endpoint which you can use within this test to retrieve `Contributions`
-- An empty `ui` folder for you to work in
 
 If you have any issues with running the local server then please reach out.
 
 ## Instructions
+
+Create a `ui` folder; this is where your implementation belongs.
 
 Within the `ui` folder set up the project with your chosen frontend JS/TS framework (React.js, Vue.js or other).
 
