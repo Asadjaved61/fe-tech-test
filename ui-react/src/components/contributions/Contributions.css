@@ -1,0 +1,4 @@
+.input-group .form-control,
+.input-group .form-select {
+  outline: none;
+}

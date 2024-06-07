@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 origins = [
-    "http://localhost:3000",  # Replace with the actual origin of your frontend
+    "http://localhost:3000",
 ]
 
 app.add_middleware(
