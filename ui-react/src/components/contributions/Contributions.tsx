@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Pagination, Row } from "react-bootstrap";
 import moment from "moment";
 import {
@@ -13,8 +13,6 @@ import "./Contributions.css";
 // *** CONSTANTS  ***
 const API_ENDPOINT = "http://127.0.0.1:8000/contributions/";
 const contributionsPerPage = 14;
-const totalContributions = 50;
-const totalPages = Math.ceil(totalContributions / contributionsPerPage);
 
 // This component is responsible for fetching and displaying contributions
 const Contributions = () => {
@@ -27,31 +25,30 @@ const Contributions = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [selectedOwner, setSelectedOwner] = useState("");
+  const [totalContributions, setTotalContributions] = useState(50);
+  const totalPages = Math.ceil(totalContributions / contributionsPerPage);
 
   const location = useLocation();
-  //const { search = "" } = useParams();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const page = Number(queryParams.get("page")) ?? 1;
   const mediaOwner = queryParams.get("owner") ?? "";
 
-  /*const contributionsOnPage = contributions
-    ? contributions.slice(
-        (currentPage - 1) * contributionsPerPage,
-        currentPage * contributionsPerPage
-      )
-    : [];*/
-
   useEffect(() => {
     setCurrentPage(page);
+    console.log(mediaOwner);
     setSelectedOwner(mediaOwner);
-    const newSkipValue = page * contributionsPerPage;
-    getContributions(newSkipValue);
+    const newSkipValue = (page - 1) * contributionsPerPage;
+    getContributions(newSkipValue, mediaOwner);
   }, []);
 
-  const getContributions = async (skipNumber: Number) => {
+  const getContributions = async (skipNumber: Number, owner?: string) => {
+    let url = `${API_ENDPOINT}?skip=${skipNumber}&limit=${contributionsPerPage}`;
+    if (owner) {
+      url += `&owner=${owner}`;
+    }
     // Fetch contributions from the API with pagination
-    fetch(`${API_ENDPOINT}?skip=${skipNumber}&limit=${contributionsPerPage}`)
+    fetch(url)
       .then((res) => {
         if (!res.ok) {
           // Throw an error if the response is not OK
@@ -70,6 +67,8 @@ const Contributions = () => {
           })
         );
         setContributions(contributionsWithFormattedDates);
+        setTotalContributions(data?.total);
+
         setFilteredContributions(null);
       })
       .catch((error) => {
@@ -89,10 +88,11 @@ const Contributions = () => {
 
     // Navigate to the new URL with the appended parameter
     navigate(`/contributions/?page=${currentPage}&${params.toString()}`);
+    getContributions(0, mediaOwner);
     // Filter contributions by the selected owner
-    const filteredContributions =
+    /*const filteredContributions =
       contributions &&
-      contributions.filter((contribution) => contribution.owner === mediaOwner);
+      contributions.filter((contribution) => contribution.owner === mediaOwner);*/
     setFilteredContributions(filteredContributions);
     setSelectedOwner(mediaOwner);
   };
@@ -118,7 +118,7 @@ const Contributions = () => {
     // Calculate the new skip value based on the page number and the number of contributions per page
     const newSkipValue = (pageNumber - 1) * contributionsPerPage;
 
-    navigate(`/contributions?page=${pageNumber}`);
+    navigate(`/contributions/?page=${pageNumber}`);
 
     // Make the API call with the new skip value
     getContributions(newSkipValue);
