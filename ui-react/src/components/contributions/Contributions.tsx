@@ -31,12 +31,11 @@ const Contributions = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
-  const page = Number(queryParams.get("page")) ?? 1;
+  const page = queryParams.get("page") ? Number(queryParams.get("page")) : 1;
   const mediaOwner = queryParams.get("owner") ?? "";
 
   useEffect(() => {
     setCurrentPage(page);
-    console.log(mediaOwner);
     setSelectedOwner(mediaOwner);
     const newSkipValue = (page - 1) * contributionsPerPage;
     getContributions(newSkipValue, mediaOwner);
